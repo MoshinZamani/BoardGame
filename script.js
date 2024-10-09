@@ -7,51 +7,6 @@ var board = Array(numberOfRows)
   .fill(0)
   .map(() => Array(numberOfColumns).fill(0));
 
-// Handle the players order
-const handleOrder = () => {
-  const orderEl = document.getElementById("header");
-  if (orderEl.textContent === "Player - 1") {
-    orderEl.textContent = "Player - 2";
-  } else orderEl.textContent = "Player - 1";
-};
-
-// Handle the click on the board
-const handleClick = (id) => {
-  const clickedCell = document.getElementById(id).querySelector("div");
-  document.getElementById(id).querySelector("div");
-  const orderEl = document.getElementById("header");
-
-  const row = parseInt(id / numberOfColumns);
-  const column = id % numberOfColumns;
-
-  if (board[row][column] === 0) {
-    if (orderEl.textContent === "Player - 1") {
-      clickedCell.style.display = "block";
-      clickedCell.style.backgroundColor = "#34c471";
-
-      board[row][column] = 1;
-    } else {
-      clickedCell.style.display = "block";
-      clickedCell.style.backgroundColor = "#df3670";
-
-      board[row][column] = 2;
-    }
-
-    if (checkWinner(row, column)) {
-      setTimeout(() => {
-        alert(`Player ${board[row][column]} wins!`);
-        resetGame();
-      }, 200);
-    } else if (checkDraw()) {
-      setTimeout(() => {
-        alert("It's a draw!");
-        resetGame();
-      }, 200);
-    }
-    handleOrder();
-  }
-};
-
 // Check for the winner
 const checkWinner = (row, column) => {
   const player = board[row][column];
@@ -133,6 +88,70 @@ const resetGame = () => {
 };
 
 // Check if it is draw
+// If there is no empty cell then it's a draw
 const checkDraw = () => {
   return board.every((row) => row.every((cell) => cell !== 0));
 };
+
+// Create the board
+const createBoard = () => {
+  let boardHTML = "";
+  for (let i = 0; i < 42; i++) {
+    boardHTML += `<div id="${i}" class="board-item"><div></div></div>`;
+  }
+  return boardHTML;
+};
+
+// Handle the players order
+const handleOrder = () => {
+  const orderEl = document.getElementById("header");
+  if (orderEl.textContent === "Player - 1") {
+    orderEl.textContent = "Player - 2";
+  } else orderEl.textContent = "Player - 1";
+};
+
+// Handle the click on the board
+const handleClick = (event) => {
+  const clickedCell = event.target;
+  const clickedCellCircle = clickedCell.querySelector("div");
+  const orderEl = document.getElementById("header");
+
+  const row = parseInt(clickedCell.id / numberOfColumns);
+  const column = clickedCell.id % numberOfColumns;
+
+  if (board[row][column] === 0) {
+    if (orderEl.textContent === "Player - 1") {
+      clickedCellCircle.style.display = "block";
+      clickedCellCircle.style.backgroundColor = "#34c471";
+
+      board[row][column] = 1;
+    } else {
+      clickedCellCircle.style.display = "block";
+      clickedCellCircle.style.backgroundColor = "#df3670";
+
+      board[row][column] = 2;
+    }
+
+    if (checkWinner(row, column)) {
+      setTimeout(() => {
+        alert(`Player ${board[row][column]} wins!`);
+        resetGame();
+      }, 200);
+    } else if (checkDraw()) {
+      setTimeout(() => {
+        alert("It's a draw!");
+        resetGame();
+      }, 200);
+    }
+    handleOrder();
+  }
+};
+
+document.getElementById("board-container").innerHTML = createBoard();
+
+const boardItems = document.querySelectorAll(".board-item");
+boardItems.forEach((b) =>
+  b.addEventListener("click", function (event) {
+    handleClick(event);
+  })
+);
